@@ -639,8 +639,16 @@ public class SCLAlertView: UIViewController {
             circleIconView = UIImageView(image: iconImage!)
         }
         circleView.addSubview(circleIconView!)
-        let x = (kCircleHeight - kCircleIconHeight) / 2
-        circleIconView!.frame = CGRectMake(x, x, kCircleIconHeight, kCircleIconHeight)
+        
+        if style == .Custom {
+            let x: CGFloat = 0
+            let heightMultiplier = iconImage!.size.height / iconImage!.size.width
+            circleView.backgroundColor = UIColor.whiteColor()
+            circleIconView!.frame = CGRectMake(x, x, kCircleHeight, kCircleHeight * heightMultiplier)
+        } else {
+            let x = (kCircleHeight - kCircleIconHeight) / 2
+            circleIconView!.frame = CGRectMake(x, x, kCircleIconHeight, kCircleIconHeight)
+        }
         
         for txt in inputs {
             txt.layer.borderColor = viewColor.CGColor
