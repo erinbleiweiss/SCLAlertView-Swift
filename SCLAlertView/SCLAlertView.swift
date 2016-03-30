@@ -144,6 +144,8 @@ public class SCLAlertView: UIViewController {
     let kTextFieldHeight: CGFloat = 45.0 * scale
     let kButtonHeight: CGFloat = 45.0 * scale
     let kMargin: CGFloat = 10.0 * scale
+    let kImageHeight: CGFloat = 60.0 * scale
+    let kLowerTitleHeight: CGFloat = 45.0 * scale
     
     // Font
     let kDefaultFont = "HelveticaNeue"
@@ -174,6 +176,8 @@ public class SCLAlertView: UIViewController {
     private var inputs = [UITextField]()
     private var buttons = [SCLButton]()
     private var social_buttons = [UIButton]()
+    private var images = [UIImageView]()
+    private var lowerTitles = [UILabel]()
     private var selfReference: SCLAlertView?
     
     required public init?(coder aDecoder: NSCoder) {
@@ -249,14 +253,17 @@ public class SCLAlertView: UIViewController {
         let maxHeight = sz.height - 100 // max overall height
         var consumedHeight = CGFloat(0)
         consumedHeight += kTitleTop + kTitleHeight
-        consumedHeight += 14
+        consumedHeight += 14 * scale
         consumedHeight += kButtonHeight * CGFloat(buttons.count)
         consumedHeight += kTextFieldHeight * CGFloat(inputs.count)
         if (topLabelTitle.text != nil) {
             consumedHeight += kTitleHeight + 24
-            topLabelTitle.font = UIFont(name: "HelveticaNeue-Bold", size: 24)
+            topLabelTitle.font = UIFont(name: kButtonFont, size: 24)
             topLabelTitle.sizeLabel(24)
         }
+        consumedHeight += kImageHeight * CGFloat(images.count)
+        consumedHeight += kLowerTitleHeight * CGFloat(lowerTitles.count)
+        consumedHeight += kMargin
         labelTitle.sizeLabel(20)
         if social_buttons.count > 0{
             consumedHeight += kButtonHeight
@@ -306,34 +313,50 @@ public class SCLAlertView: UIViewController {
         for txt in inputs {
             txt.frame = CGRect(x:x, y:y, width: width, height:30)
             txt.layer.cornerRadius = fieldCornerRadius
-            y += kTextFieldHeight + kMargin
+            y += kTextFieldHeight
         }
+        
+        
+        // Images
+        for img in images {
+            x = (kWindowWidth / 2) - (img.frame.width / 2)
+            img.frame = CGRect(x: x, y: y, width: img.frame.width, height: img.frame.height)
+            y += kImageHeight
+        }
+        
+        // Lower titles
+        for lbl in lowerTitles{
+            lbl.frame = CGRect(x: 0, y: y, width: lbl.frame.width, height: lbl.frame.height)
+            y += kLowerTitleHeight
+        }
+        
         
         var buttonHeight = (kButtonHeight - (10 * scale))
         
         // Social Media Buttons
-        x = (kWindowWidth / 2)
-        var rowWidth: CGFloat = 0
-        for (idx, btn) in social_buttons.enumerate(){
-            let offset = (CGFloat(idx) * (buttonHeight + kMargin))
-            rowWidth += offset
+        if social_buttons.count > 0{
+            x = (kWindowWidth / 2)
+            var rowWidth: CGFloat = 0
+            for (idx, btn) in social_buttons.enumerate(){
+                let offset = (CGFloat(idx) * (buttonHeight + kMargin))
+                rowWidth += offset
+            }
+            x -= (rowWidth / 2)
+            x += buttonHeight + (kMargin * 1.5)
+            for (idx, btn) in social_buttons.enumerate(){
+                let offset = (CGFloat(idx) * (buttonHeight + kMargin))
+                btn.frame = CGRect(x:x + offset, y:y, width: buttonHeight, height: buttonHeight)
+            }
+            y += buttonHeight
         }
-        x -= (rowWidth / 2)
-        x += buttonHeight + (kMargin * 1.5)
-        for (idx, btn) in social_buttons.enumerate(){
-            let offset = (CGFloat(idx) * (buttonHeight + kMargin))
-            btn.frame = CGRect(x:x + offset, y:y, width: buttonHeight, height: buttonHeight)
-        }
-        y += buttonHeight + kMargin
         
         // Buttons
         x = (kWindowWidth / 2) - (width / 2)
         for btn in buttons {
             btn.frame = CGRect(x:x, y:y, width: width, height:buttonHeight)
             btn.layer.cornerRadius = buttonCornerRadius
-            y += kButtonHeight + kMargin
+            y += kButtonHeight
         }
-        y += kButtonHeight
     }
     
     override public func viewDidAppear(animated: Bool) {
@@ -387,6 +410,29 @@ public class SCLAlertView: UIViewController {
         contentView.addSubview(txt)
         inputs.append(txt)
         return txt
+    }
+    
+    public func addImage(image: UIImage){
+        kWindowHeight += kImageHeight
+        let img = UIImageView(image: image)
+        let scale = (kImageHeight - kMargin) / image.size.height
+        let width = image.size.width * scale
+        img.frame = CGRectMake(0, 0, width, kImageHeight - kMargin)
+        contentView.addSubview(img)
+        images.append(img)
+    }
+    
+    
+    public func addLowerTitle(title:String){
+        kWindowHeight += kLowerTitleHeight
+        let lbl = UILabel(frame: CGRectMake(0, 0, kWindowWidth, kLowerTitleHeight - kMargin))
+        lbl.numberOfLines = 1
+        lbl.textAlignment = .Center
+        lbl.font = UIFont(name: kDefaultFont, size:16)
+        lbl.text = title
+        lbl.sizeLabel(16.0)
+        contentView.addSubview(lbl)
+        lowerTitles.append(lbl)
     }
     
     public func addButton(title:String, action:()->Void)->SCLButton {
