@@ -377,7 +377,7 @@ public class SCLAlertView: UIViewController {
         }
     }
     
-    public func addSocialMedia(){
+    public func addSocialMedia() -> [UIButton]{
         // Update view height
         kWindowHeight += kButtonHeight
         // Add buttons
@@ -391,6 +391,7 @@ public class SCLAlertView: UIViewController {
             contentView.addSubview(btn)
             social_buttons.append(btn)
         }
+        return social_buttons
     }
     
     public func addTextField(title:String?=nil)->UITextField {
