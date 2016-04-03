@@ -294,7 +294,11 @@ public class SCLAlertView: UIViewController {
         // Top label
         if (topLabelTitle.text != nil){
             contentView.addSubview(topLabelTitle)
-            topLabelTitle.frame = topLabelTitle.frame.offsetBy(dx: 0, dy: 0)
+            topLabelTitle.frame = topLabelTitle.frame.offsetBy(dx: 0, dy: 12 * scale)
+            titleOffset += (12.0 * scale * 2)
+        }
+        
+        if (topLabelTitle.text != nil){
             titleOffset += (12.0 * scale)
         }
         
@@ -302,16 +306,25 @@ public class SCLAlertView: UIViewController {
         labelTitle.frame = labelTitle.frame.offsetBy(dx: 0, dy: titleOffset)
         titleOffset += (12.0 * scale)
         
+        if (topLabelTitle.text != nil){
+            titleOffset += (12.0 * scale)
+        }
+        
         let width = kWindowWidth - (24 * scale)
         // Subtitle
         x = (kWindowWidth / 2) - (width / 2)
         y = kTitleTop + kTitleHeight + titleOffset
         viewText.frame = CGRect(x:x, y:y, width: width, height:kTextHeight)
         viewText.frame = CGRect(x:x, y:y, width: viewTextWidth, height:viewTextHeight)
+        
+        if (topLabelTitle.text != nil){
+            titleOffset += (12.0 * scale)
+        }
+        
         // Text fields
-        y += viewTextHeight + 14.0
+        y += viewTextHeight + (14.0 * scale)
         for txt in inputs {
-            txt.frame = CGRect(x:x, y:y, width: width, height:30)
+            txt.frame = CGRect(x:x, y:y, width: width, height:(30 * scale))
             txt.layer.cornerRadius = fieldCornerRadius
             y += kTextFieldHeight
         }
@@ -320,18 +333,39 @@ public class SCLAlertView: UIViewController {
         // Images
         for img in images {
             x = (kWindowWidth / 2) - (img.frame.width / 2)
-            img.frame = CGRect(x: x, y: y, width: img.frame.width, height: img.frame.height)
+            if viewText.text == "" {
+                let unusedHeight = viewTextHeight
+                let yPos = y - (viewTextHeight * 2)
+                let currentWidth = img.frame.width
+                let currentHeight = img.frame.height
+                
+                let newHeight = currentHeight + unusedHeight
+                let widthIncrease = (currentWidth * unusedHeight) / currentHeight
+                let newWidth = currentWidth + widthIncrease
+                
+                x = (kWindowWidth / 2) - (newWidth / 2)
+                
+                img.frame = CGRect(x: x, y: yPos, width: newWidth, height: newHeight)
+            } else {
+                img.frame = CGRect(x: x, y: y, width: img.frame.width, height: img.frame.height)
+            }
             y += kImageHeight
         }
         
         // Lower titles
         for lbl in lowerTitles{
-            lbl.frame = CGRect(x: 0, y: y, width: lbl.frame.width, height: lbl.frame.height)
+            let labelWidth = lbl.frame.width - (kMargin * 2)
+            x = (kWindowWidth / 2) - (labelWidth / 2)
+            lbl.frame = CGRect(x: x, y: y, width: labelWidth, height: lbl.frame.height)
             y += kLowerTitleHeight
         }
         
         
         var buttonHeight = (kButtonHeight - (10 * scale))
+        
+        if (topLabelTitle.text != nil){
+            y += (12.0 * scale)
+        }
         
         // Social Media Buttons
         if social_buttons.count > 0{
@@ -345,9 +379,13 @@ public class SCLAlertView: UIViewController {
             x += buttonHeight + (kMargin * 1.5)
             for (idx, btn) in social_buttons.enumerate(){
                 let offset = (CGFloat(idx) * (buttonHeight + kMargin))
-                btn.frame = CGRect(x:x + offset, y:y, width: buttonHeight, height: buttonHeight)
+                btn.frame = CGRect(x:x + offset, y:y, width: buttonHeight-kMargin, height: buttonHeight-kMargin)
             }
             y += buttonHeight
+        }
+        
+        if (topLabelTitle.text != nil){
+            y += (12.0 * scale)
         }
         
         // Buttons
