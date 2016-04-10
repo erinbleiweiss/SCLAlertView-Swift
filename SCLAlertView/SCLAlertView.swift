@@ -264,6 +264,11 @@ public class SCLAlertView: UIViewController {
         consumedHeight += kImageHeight * CGFloat(images.count)
         consumedHeight += kLowerTitleHeight * CGFloat(lowerTitles.count)
         consumedHeight += kMargin
+        
+        if (topLabelTitle.text != nil){
+            consumedHeight += kMargin
+        }
+        
         labelTitle.sizeLabel(20)
         if social_buttons.count > 0{
             consumedHeight += kButtonHeight
@@ -376,10 +381,9 @@ public class SCLAlertView: UIViewController {
                 rowWidth += offset
             }
             x -= (rowWidth / 2)
-            x += buttonHeight + (kMargin * 1.5)
             for (idx, btn) in social_buttons.enumerate(){
-                let offset = (CGFloat(idx) * (buttonHeight + kMargin))
-                btn.frame = CGRect(x:x + offset, y:y, width: buttonHeight-kMargin, height: buttonHeight-kMargin)
+                btn.frame = CGRect(x:x, y:y, width: buttonHeight-kMargin, height: buttonHeight-kMargin)
+                x += buttonHeight + (2 * kMargin)
             }
             y += buttonHeight
         }
@@ -419,7 +423,7 @@ public class SCLAlertView: UIViewController {
         // Update view height
         kWindowHeight += kButtonHeight
         // Add buttons
-        let images = ["facebook", "twitter", "googleplus", "instagram"]
+        let images = ["facebook", "twitter", "instagram"]
         for name in images{
             let image = UIImage(named: name)
             let btn = UIButton(type: UIButtonType.Custom) as UIButton
